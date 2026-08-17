@@ -27,8 +27,10 @@ $ConfigPath = (Resolve-Path $ConfigPath).Path
 $action = New-ScheduledTaskAction -Execute $ExePath -Argument "--config `"$ConfigPath`""
 $trigger = New-ScheduledTaskTrigger -Daily -At $Time
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopOnIdleEnd -ExecutionTimeLimit (New-TimeSpan -Hours 1)
-$principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType S4U -RunLevel Limited
 
-Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description 'Nightly LogSentinel log scan + Claude investigation'
+# No explicit -Principal: an S4U/Limited principal hits "Access is denied" (HRESULT 0x80070005)
+# without an elevated PowerShell session. Default principal runs as the current user with an
+# interactive token, which only needs the user to be logged in at 03:00 — fine for a desktop.
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Settings $settings -Description 'Nightly LogSentinel log scan + Claude investigation'
 
 Write-Output "Registered scheduled task '$TaskName' to run daily at $Time -> $ExePath"
