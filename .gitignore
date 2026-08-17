@@ -1,0 +1,11 @@
+bin/
+obj/
+publish/
+.vs/
+*.user
+
+reports/
+logs/
+
+# Real config is machine-specific; keep only the example tracked.
+config/log_sentinel.config.json

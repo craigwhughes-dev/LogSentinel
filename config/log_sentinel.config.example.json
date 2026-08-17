@@ -1,0 +1,26 @@
+{
+  "days_to_check": 1,
+  "context_lines": 2,
+  "report_dir": "reports",
+  "run_log_dir": "logs",
+  "handoff_doc_path": "C:\\Users\\Craig\\.claude\\skills\\Strategy_Auto_Trader\\HANDOFF.md",
+  "claude": {
+    "enabled": false,
+    "timeout_seconds": 300,
+    "allowed_tools": "Read,Grep,Glob",
+    "max_issues_per_prompt": 25
+  },
+  "patterns": [
+    { "name": "error", "regex": "ERROR|Exception|Traceback", "severity": "error" },
+    { "name": "critical", "regex": "CRITICAL|FATAL", "severity": "critical" }
+  ],
+  "log_dirs": [
+    {
+      "name": "strategy_auto_trader",
+      "path": "C:\\Users\\Craig\\.claude\\skills\\Strategy_Auto_Trader\\logs",
+      "codebase_path": "C:\\Users\\Craig\\.claude\\skills\\Strategy_Auto_Trader",
+      "file_filter": "*.log",
+      "recurse": true
+    }
+  ]
+}

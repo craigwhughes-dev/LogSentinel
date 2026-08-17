@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LogSentinel/LogSentinel.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LogSentinel.Tests/LogSentinel.Tests.csproj" />
+  </Folder>
+</Solution>
