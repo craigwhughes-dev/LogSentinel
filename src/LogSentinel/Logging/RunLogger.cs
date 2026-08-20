@@ -1,5 +1,5 @@
-using System.Text.Json;
 using LogSentinel.Reporting;
+using System.Text.Json;
 
 namespace LogSentinel.Logging;
 

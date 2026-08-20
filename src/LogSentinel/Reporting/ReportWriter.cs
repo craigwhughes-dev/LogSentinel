@@ -1,7 +1,7 @@
-using System.Text;
 using LogSentinel.ClaudeIntegration;
 using LogSentinel.Config;
 using LogSentinel.Scanning;
+using System.Text;
 
 namespace LogSentinel.Reporting;
 

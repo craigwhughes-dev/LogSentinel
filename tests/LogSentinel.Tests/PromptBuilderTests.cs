@@ -1,6 +1,5 @@
 using LogSentinel.ClaudeIntegration;
 using LogSentinel.Scanning;
-using Xunit;
 
 namespace LogSentinel.Tests;
 

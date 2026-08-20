@@ -1,7 +1,7 @@
+using LogSentinel.Config;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using LogSentinel.Config;
 
 namespace LogSentinel.Scanning;
 

@@ -1,5 +1,4 @@
 using LogSentinel.Config;
-using Xunit;
 
 namespace LogSentinel.Tests;
 

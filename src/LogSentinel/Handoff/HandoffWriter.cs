@@ -1,6 +1,6 @@
+using LogSentinel.Reporting;
 using System.Text;
 using System.Text.RegularExpressions;
-using LogSentinel.Reporting;
 
 namespace LogSentinel.Handoff;
 

@@ -2,7 +2,6 @@ using LogSentinel.ClaudeIntegration;
 using LogSentinel.Config;
 using LogSentinel.Reporting;
 using LogSentinel.Scanning;
-using Xunit;
 
 namespace LogSentinel.Tests;
 

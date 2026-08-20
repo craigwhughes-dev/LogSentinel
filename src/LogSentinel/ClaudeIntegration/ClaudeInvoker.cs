@@ -1,8 +1,8 @@
+using LogSentinel.Config;
+using LogSentinel.Scanning;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using LogSentinel.Config;
-using LogSentinel.Scanning;
 
 namespace LogSentinel.ClaudeIntegration;
 

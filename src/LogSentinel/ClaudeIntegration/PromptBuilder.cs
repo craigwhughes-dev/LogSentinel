@@ -1,5 +1,5 @@
-using System.Text;
 using LogSentinel.Scanning;
+using System.Text;
 
 namespace LogSentinel.ClaudeIntegration;
 

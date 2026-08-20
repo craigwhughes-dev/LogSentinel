@@ -1,6 +1,5 @@
-using System.Text.Json;
 using LogSentinel.Scanning;
-using Xunit;
+using System.Text.Json;
 
 namespace LogSentinel.Tests;
 
