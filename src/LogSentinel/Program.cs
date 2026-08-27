@@ -41,6 +41,7 @@ public static class Program
             try
             {
                 scanResult = await scanner.RunAsync(dirConfig, config.DaysToCheck, config.ContextLines, config.Patterns);
+                scanResult = scanResult with { Issues = IssueDeduplicator.Dedup(scanResult.Issues) };
             }
             catch (PowerShellInvocationException ex)
             {

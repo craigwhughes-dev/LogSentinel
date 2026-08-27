@@ -117,6 +117,37 @@ public class HandoffWriterTests
     }
 
     [Fact]
+    public void BuildSection_ClaudeFailed_IncludesContextLinesNotJustMatchedLine()
+    {
+        var issue = new LogIssue
+        {
+            File = "C:\\logs\\myapp\\run.log",
+            LineNumber = 42,
+            PatternName = "error",
+            Severity = "error",
+            Line = "ERROR order rejected",
+            ContextBefore = new[] { "Traceback (most recent call last):", "  File \"broker.py\", line 10, in place_order" },
+            ContextAfter = new[] { "RuntimeError: insufficient margin" },
+        };
+        var entries = new[]
+        {
+            new DirReportEntry
+            {
+                DirConfig = MakeDirConfig(),
+                ScanResult = new ScanResult { Issues = new[] { issue } },
+                ClaudeResult = ClaudeInvocationResult.Failed("token expired"),
+            },
+        };
+
+        var section = HandoffWriter.BuildSection(entries, DateTimeOffset.Now);
+
+        Assert.Contains("Traceback (most recent call last):", section);
+        Assert.Contains("place_order", section);
+        Assert.Contains("RuntimeError: insufficient margin", section);
+        Assert.Contains("ERROR order rejected", section);
+    }
+
+    [Fact]
     public void UpdateDoc_FileDoesNotExist_CreatesItWithJustTheSection()
     {
         var path = TempPath();

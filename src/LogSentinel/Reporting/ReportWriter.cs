@@ -23,7 +23,10 @@ public static class ReportWriter
         sb.AppendLine($"Scanned at: {timestamp:yyyy-MM-dd HH:mm:ss zzz}");
         sb.AppendLine($"Log directory: {dirConfig.Path}");
         sb.AppendLine($"Codebase: {dirConfig.CodebasePath}");
-        sb.AppendLine($"Issues found: {scanResult.Issues.Count}");
+        var totalOccurrences = scanResult.Issues.Sum(i => i.OccurrenceCount);
+        sb.AppendLine(totalOccurrences > scanResult.Issues.Count
+            ? $"Issues found: {scanResult.Issues.Count} distinct ({totalOccurrences} occurrences)"
+            : $"Issues found: {scanResult.Issues.Count}");
         sb.AppendLine();
 
         if (scanResult.ScanErrors.Count > 0)
@@ -40,8 +43,8 @@ public static class ReportWriter
         {
             sb.AppendLine("## Issues");
             sb.AppendLine();
-            sb.AppendLine("| File | Line | Severity | Pattern | Excerpt |");
-            sb.AppendLine("|------|------|----------|---------|---------|");
+            sb.AppendLine("| File | Line | Severity | Pattern | Excerpt | Count |");
+            sb.AppendLine("|------|------|----------|---------|---------|-------|");
             foreach (var issue in scanResult.Issues)
             {
                 var excerpt = issue.Line.Replace("|", "\\|").Trim();
@@ -49,7 +52,7 @@ public static class ReportWriter
                 {
                     excerpt = excerpt[..120] + "…";
                 }
-                sb.AppendLine($"| {issue.File} | {issue.LineNumber} | {issue.Severity} | {issue.PatternName} | {excerpt} |");
+                sb.AppendLine($"| {issue.File} | {issue.LineNumber} | {issue.Severity} | {issue.PatternName} | {excerpt} | {issue.OccurrenceCount} |");
             }
             sb.AppendLine();
         }

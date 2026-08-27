@@ -35,7 +35,8 @@ public static class PromptBuilder
         for (var i = 0; i < toInclude.Count; i++)
         {
             var issue = toInclude[i];
-            sb.AppendLine($"### Issue {i + 1}: [{issue.Severity}] {issue.PatternName} in {issue.File}:{issue.LineNumber}");
+            var suffix = issue.OccurrenceCount > 1 ? $" (×{issue.OccurrenceCount} occurrences)" : string.Empty;
+            sb.AppendLine($"### Issue {i + 1}: [{issue.Severity}] {issue.PatternName} in {issue.File}:{issue.LineNumber}{suffix}");
             foreach (var line in issue.ContextBefore)
             {
                 sb.AppendLine($"    {line}");

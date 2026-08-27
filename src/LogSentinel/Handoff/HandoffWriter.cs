@@ -64,11 +64,35 @@ public static class HandoffWriter
         return sb.ToString();
     }
 
+    // Used whenever Claude's own investigation isn't available (disabled, failed, timed
+    // out) so the exception detail (stack trace / surrounding lines) still reaches the
+    // handoff doc instead of being reduced to a single grep-matched line.
     private static void AppendRawIssueList(StringBuilder sb, DirReportEntry entry)
     {
         foreach (var issue in entry.ScanResult.Issues)
         {
-            sb.AppendLine($"- [{issue.Severity}/{issue.PatternName}] `{issue.File}:{issue.LineNumber}` — {issue.Line.Trim()}");
+            var suffix = issue.OccurrenceCount > 1 ? $" (×{issue.OccurrenceCount})" : string.Empty;
+            sb.AppendLine($"- [{issue.Severity}/{issue.PatternName}] `{issue.File}:{issue.LineNumber}`{suffix}");
+
+            var hasContext = issue.ContextBefore.Count > 0 || issue.ContextAfter.Count > 0;
+            if (hasContext)
+            {
+                sb.AppendLine("  ```");
+                foreach (var line in issue.ContextBefore)
+                {
+                    sb.AppendLine($"  {line}");
+                }
+                sb.AppendLine($"  >>> {issue.Line.Trim()}");
+                foreach (var line in issue.ContextAfter)
+                {
+                    sb.AppendLine($"  {line}");
+                }
+                sb.AppendLine("  ```");
+            }
+            else
+            {
+                sb.AppendLine($"  {issue.Line.Trim()}");
+            }
         }
         sb.AppendLine();
     }
