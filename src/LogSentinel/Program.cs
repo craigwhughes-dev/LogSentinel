@@ -25,7 +25,7 @@ public static class Program
             return 2;
         }
 
-        var scriptPath = Path.Combine(repoRoot, "scripts", "Search-Logs.ps1");
+        var scriptPath = ResolveScriptPath(repoRoot);
         var reportDir = ResolveRelative(repoRoot, config.ReportDir);
         var runLogDir = ResolveRelative(repoRoot, config.RunLogDir);
 
@@ -108,6 +108,17 @@ public static class Program
 
     private static string ResolveRelative(string repoRoot, string maybeRelativePath) =>
         Path.IsPathRooted(maybeRelativePath) ? maybeRelativePath : Path.Combine(repoRoot, maybeRelativePath);
+
+    private static string ResolveScriptPath(string repoRoot)
+    {
+        var alongside = Path.Combine(AppContext.BaseDirectory, "scripts", "Search-Logs.ps1");
+        if (File.Exists(alongside))
+        {
+            return alongside;
+        }
+
+        return Path.Combine(repoRoot, "scripts", "Search-Logs.ps1");
+    }
 
     private static string FindRepoRoot(string startDir)
     {
