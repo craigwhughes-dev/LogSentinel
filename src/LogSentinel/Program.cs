@@ -16,6 +16,7 @@ public static class Program
 
     public static int Main(string[] args)
     {
+        Log.Info("LogSentinel starting up...");
         var repoRoot = FindRepoRoot(AppContext.BaseDirectory);
         var configPath = ParseConfigArg(args) ?? Path.Combine(repoRoot, "config", "log_sentinel.config.json");
 
@@ -113,6 +114,7 @@ public static class Program
             var handoffPath = ResolveRelative(repoRoot, config.HandoffDocPath);
             try
             {
+                Log.Info($"About to update handoff doc '{handoffPath}'");
                 HandoffWriter.UpdateDoc(handoffPath, entries, timestamp);
             }
             catch (Exception ex)
