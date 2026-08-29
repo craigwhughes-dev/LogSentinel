@@ -12,6 +12,12 @@
     <None Include="..\..\scripts\**\*" CopyToOutputDirectory="PreserveNewest">
       <Link>scripts\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
+    <None Include="log4net.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="3.4.0" />
   </ItemGroup>
 
 </Project>

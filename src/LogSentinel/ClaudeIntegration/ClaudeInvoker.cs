@@ -12,7 +12,7 @@ namespace LogSentinel.ClaudeIntegration;
 /// </summary>
 public sealed class ClaudeInvoker : IClaudeInvoker
 {
-    public async Task<ClaudeInvocationResult> InvestigateAsync(IReadOnlyList<LogIssue> issues, LogDirConfig dirConfig, ClaudeConfig claudeConfig, CancellationToken cancellationToken = default)
+    public ClaudeInvocationResult Investigate(IReadOnlyList<LogIssue> issues, LogDirConfig dirConfig, ClaudeConfig claudeConfig)
     {
         if (!Directory.Exists(dirConfig.CodebasePath))
         {
@@ -60,22 +60,19 @@ public sealed class ClaudeInvoker : IClaudeInvoker
 
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-        await process.StandardInput.WriteAsync(prompt);
+        process.StandardInput.Write(prompt);
         process.StandardInput.Close();
 
-        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(TimeSpan.FromSeconds(claudeConfig.TimeoutSeconds));
-
-        try
-        {
-            await process.WaitForExitAsync(timeoutCts.Token);
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        var timeoutMs = (int)TimeSpan.FromSeconds(claudeConfig.TimeoutSeconds).TotalMilliseconds;
+        if (!process.WaitForExit(timeoutMs))
         {
             TryKillTree(process);
             return ClaudeInvocationResult.Failed(
                 $"claude CLI timed out after {claudeConfig.TimeoutSeconds}s for '{dirConfig.Name}'.", timedOut: true);
         }
+
+        // Flush BeginOutputReadLine/BeginErrorReadLine buffers before reading stdout/stderr below.
+        process.WaitForExit();
 
         if (process.ExitCode != 0)
         {

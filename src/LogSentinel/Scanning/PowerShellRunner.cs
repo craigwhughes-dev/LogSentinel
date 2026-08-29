@@ -1,4 +1,5 @@
 using LogSentinel.Config;
+using log4net;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -12,6 +13,8 @@ public sealed class PowerShellInvocationException : Exception
 
 public sealed class PowerShellRunner : IPowerShellRunner
 {
+    private static readonly ILog Log = LogManager.GetLogger(typeof(PowerShellRunner));
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -29,7 +32,7 @@ public sealed class PowerShellRunner : IPowerShellRunner
         _scriptPath = scriptPath;
     }
 
-    public async Task<ScanResult> RunAsync(LogDirConfig dirConfig, int daysBack, int contextLines, IReadOnlyList<PatternConfig> patterns, CancellationToken cancellationToken = default)
+    public ScanResult Run(LogDirConfig dirConfig, int daysBack, int contextLines, IReadOnlyList<PatternConfig> patterns)
     {
         var patternsJson = JsonSerializer.Serialize(patterns.Select(p => new { name = p.Name, regex = p.Regex, severity = p.Severity }));
 
@@ -70,10 +73,12 @@ public sealed class PowerShellRunner : IPowerShellRunner
         process.OutputDataReceived += (_, e) => { if (e.Data is not null) stdout.AppendLine(e.Data); };
         process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.AppendLine(e.Data); };
 
+        Log.Info($"[{dirConfig.Name}] invoking: {FormatCommandLine(startInfo)}");
+
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-        await process.WaitForExitAsync(cancellationToken);
+        process.WaitForExit();
 
         var stdoutText = stdout.ToString();
         if (string.IsNullOrWhiteSpace(stdoutText))
@@ -93,4 +98,10 @@ public sealed class PowerShellRunner : IPowerShellRunner
                 $"Search-Logs.ps1 for '{dirConfig.Name}' did not return parseable JSON: {ex.Message}. stdout: {stdoutText}");
         }
     }
+
+    private static string FormatCommandLine(ProcessStartInfo startInfo) =>
+        startInfo.FileName + " " + string.Join(' ', startInfo.ArgumentList.Select(QuoteIfNeeded));
+
+    private static string QuoteIfNeeded(string arg) =>
+        arg.Length == 0 || arg.Contains(' ') ? $"\"{arg}\"" : arg;
 }
